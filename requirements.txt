@@ -1,8 +1,8 @@
-Install below dependencies :
-
-streamlit 
-scikit-learn 
-numpy 
-pandas 
-matplotlib 
+streamlit
+scikit-learn
+sklearn
+numpy
+pandas
+matplotlib
 seaborn
+xgboost
