@@ -24,7 +24,7 @@ from sklearn.preprocessing import LabelEncoder
 
 st.set_page_config(page_title="ML Classification App", layout="wide")
 st.title("Machine Learning Classification App")
-st.write("Upload a test CSV file. The last column must be the target variable.")
+st.write("Upload a test CSV file. The last column must be the target variable. 'diagnosis' ")
 
 
 # =====================================
@@ -153,6 +153,8 @@ if uploaded_file is not None:
     # =====================================
     # Evaluation Metrics
     # =====================================
+
+    st.header("Selected Model : "+model_choice)
 
     st.subheader("Evaluation Metrics")
 
