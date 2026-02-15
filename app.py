@@ -68,6 +68,12 @@ if uploaded_file is not None:
         st.error("Target column 'diagnosis' not found in uploaded file.")
         st.stop()
 
+    # Remove any accidental index columns
+    data = data.loc[:, ~data.columns.str.contains("^Unnamed")]
+
+    # Keep only training features
+    feature_names = load_feature_names()
+    X = data[feature_names]
 
     # Separate target
     y = data["diagnosis"]
