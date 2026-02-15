@@ -79,8 +79,13 @@ if uploaded_file is not None:
         st.stop()
 
     # Split features & target
-    X = data.iloc[:, :-1]
-    y = data.iloc[:, -1]
+    #X = data.iloc[:, :-1]
+    #y = data.iloc[:, -1]
+
+    if "id" in data.columns:
+        data = data.drop(columns=["id"])
+
+    X = data.drop(columns=["diagnosis"])
 
     # =====================================
     # Model Selection Dropdown
