@@ -68,15 +68,9 @@ if uploaded_file is not None:
         st.error("Target column 'diagnosis' not found in uploaded file.")
         st.stop()
 
+
     # Separate target
     y = data["diagnosis"]
-
-    # Keep only training feature columns
-    try:
-        X = data[feature_names]
-    except KeyError:
-        st.error("Uploaded dataset does not match training features.")
-        st.stop()
 
     # Split features & target
     #X = data.iloc[:, :-1]
