@@ -31,7 +31,7 @@ def load_dataset():
     Replace this function if using custom CSV dataset.
     """
     #data = load_breast_cancer()
-    df = pd.read_csv("/Users/HarshitaShaktawat/Downloads/harshita/data.csv")
+    df = pd.read_csv("/Users/HarshitaShaktawat/Downloads/DNN/mlAssignment2/cancerData.csv")
 
     # Drop common junk columns like "Unnamed: 32"
     df = df.loc[:, ~df.columns.str.contains(r"^Unnamed", regex=True)]
