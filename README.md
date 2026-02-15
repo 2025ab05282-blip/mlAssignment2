@@ -136,7 +136,8 @@ Given the medical nature of the dataset, high recall for malignant cases is crit
 
 ## Deployment
  
-Streamlit App Link: <>
+Streamlit App Link: https://mlassignment2-zbsnv9bulpghea8nuhnfqz.streamlit.app/
+
 
 ---
 
