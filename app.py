@@ -167,16 +167,16 @@ if uploaded_file is not None:
     mcc = matthews_corrcoef(y, y_pred)
 
     col1.metric("Accuracy", f"{accuracy:.4f}")
+    if y_prob is not None:
+        auc = roc_auc_score(y, y_prob)
+        st.metric("AUC Score", f"{auc:.4f}")
     col1.metric("Precision", f"{precision:.4f}")
 
     col2.metric("Recall", f"{recall:.4f}")
     col2.metric("F1 Score", f"{f1:.4f}")
-
     col3.metric("MCC", f"{mcc:.4f}")
 
-    if y_prob is not None:
-        auc = roc_auc_score(y, y_prob)
-        st.metric("AUC Score", f"{auc:.4f}")
+
 
 
     # =====================================
