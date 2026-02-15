@@ -1,148 +1,162 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import pickle
+import os
+
+from sklearn.metrics import (
+    accuracy_score,
+    roc_auc_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    matthews_corrcoef,
+    confusion_matrix,
+    classification_report
+)
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-from sklearn.metrics import (
-    accuracy_score, precision_score, recall_score, f1_score,
-    confusion_matrix, classification_report, roc_auc_score,
-    matthews_corrcoef
-)
+# =====================================
+# Page Config
+# =====================================
 
-# Models
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-from sklearn.svm import SVC
+st.set_page_config(page_title="ML Classification App", layout="wide")
+st.title("Machine Learning Classification App")
+st.write("Upload a test CSV file. The last column must be the target variable.")
 
 
-st.title("📊 Multi-Model Classification Benchmark App")
+# =====================================
+# Load Scaler (Cached)
+# =====================================
 
-# ----------------------------------------------------
-# Upload dataset
-# ----------------------------------------------------
-file = st.file_uploader("Upload CSV Dataset", type=["csv"])
+@st.cache_resource
+def load_scaler():
+    return pickle.load(open("model/scaler.pkl", "rb"))
 
-if file:
 
-    df = pd.read_csv(file)
+@st.cache_resource
+def load_model(path):
+    return pickle.load(open(path, "rb"))
 
+
+# =====================================
+# File Upload
+# =====================================
+
+uploaded_file = st.file_uploader("Upload Test CSV", type=["csv"])
+
+if uploaded_file is not None:
+
+    data = pd.read_csv(uploaded_file)
     st.subheader("Dataset Preview")
-    st.dataframe(df.head())
+    st.dataframe(data.head())
 
-    target = st.selectbox("Select Target Column", df.columns)
+    # Split features & target
+    X = data.iloc[:, :-1]
+    y = data.iloc[:, -1]
 
-    X = df.drop(columns=[target])
-    y = df[target]
+    # =====================================
+    # Model Selection Dropdown
+    # =====================================
 
-    # Encode categorical
-    X = pd.get_dummies(X)
+    model_choice = st.selectbox(
+        "Select Model",
+        [
+            "Logistic Regression",
+            "Decision Tree",
+            "KNN",
+            "Naive Bayes",
+            "Random Forest",
+            "XGBoost"
+        ]
+    )
 
-    if y.dtype == "object":
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-
-    test_size = st.slider("Test Size (%)", 10, 40, 20) / 100
-
-    # ----------------------------------------------------
-    # All 6 required models
-    # ----------------------------------------------------
-    models = {
-        "Logistic Regression": LogisticRegression(max_iter=1000),
-        "Decision Tree": DecisionTreeClassifier(),
-        "KNN": KNeighborsClassifier(),
-        "Naive Bayes": GaussianNB(),
-        "Random Forest": RandomForestClassifier(),
-        "XGBoost": XGBClassifier(eval_metric="logloss")
+    model_files = {
+        "Logistic Regression": "model/logistic_regression.pkl",
+        "Decision Tree": "model/decision_tree.pkl",
+        "KNN": "model/knn.pkl",
+        "Naive Bayes": "model/naive_bayes.pkl",
+        "Random Forest": "model/random_forest.pkl",
+        "XGBoost": "model/xgboost.pkl"
     }
 
-    if st.button("Train & Evaluate All Models"):
+    model_path = model_files[model_choice]
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=42
-        )
+    if not os.path.exists(model_path):
+        st.error("Model not found. Please run training scripts first.")
+        st.stop()
 
-        results = []
-        predictions = {}
+    # =====================================
+    # Load Model & Scaler
+    # =====================================
 
-        n_classes = len(np.unique(y_test))
+    model = load_model(model_path)
+    scaler = load_scaler()
 
-        # ----------------------------------------------------
-        # Train each model and compute ALL metrics
-        # ----------------------------------------------------
-        for name, model in models.items():
+    # Scale features
+    X_scaled = scaler.transform(X)
 
-            model.fit(X_train, y_train)
+    # =====================================
+    # Predict
+    # =====================================
 
-            y_pred = model.predict(X_test)
-            y_proba = model.predict_proba(X_test)
+    y_pred = model.predict(X_scaled)
 
-            # AUC (binary vs multi-class)
-            if n_classes == 2:
-                auc = roc_auc_score(y_test, y_proba[:, 1])
-            else:
-                auc = roc_auc_score(
-                    y_test, y_proba,
-                    multi_class="ovr",
-                    average="weighted"
-                )
+    if hasattr(model, "predict_proba"):
+        y_prob = model.predict_proba(X_scaled)[:, 1]
+    else:
+        y_prob = None
 
-            acc = accuracy_score(y_test, y_pred)
-            prec = precision_score(y_test, y_pred, average="weighted")
-            rec = recall_score(y_test, y_pred, average="weighted")
-            f1 = f1_score(y_test, y_pred, average="weighted")
-            mcc = matthews_corrcoef(y_test, y_pred)
 
-            predictions[name] = y_pred
+    # =====================================
+    # Evaluation Metrics
+    # =====================================
 
-            results.append([name, acc, auc, prec, rec, f1, mcc])
+    st.subheader("Evaluation Metrics")
 
-        # ----------------------------------------------------
-        # Metrics table
-        # ----------------------------------------------------
-        st.subheader("📈 Model Performance Comparison")
+    col1, col2, col3 = st.columns(3)
 
-        results_df = pd.DataFrame(
-            results,
-            columns=[
-                "Model", "Accuracy", "AUC",
-                "Precision", "Recall", "F1 Score", "MCC"
-            ]
-        )
+    accuracy = accuracy_score(y, y_pred)
+    precision = precision_score(y, y_pred)
+    recall = recall_score(y, y_pred)
+    f1 = f1_score(y, y_pred)
+    mcc = matthews_corrcoef(y, y_pred)
 
-        st.dataframe(results_df.sort_values("Accuracy", ascending=False))
+    col1.metric("Accuracy", f"{accuracy:.4f}")
+    col1.metric("Precision", f"{precision:.4f}")
 
-        # ----------------------------------------------------
-        # Detailed evaluation
-        # ----------------------------------------------------
-        st.subheader("Detailed Evaluation")
+    col2.metric("Recall", f"{recall:.4f}")
+    col2.metric("F1 Score", f"{f1:.4f}")
 
-        selected_model = st.selectbox(
-            "Choose model",
-            list(models.keys())
-        )
+    col3.metric("MCC", f"{mcc:.4f}")
 
-        y_pred = predictions[selected_model]
+    if y_prob is not None:
+        auc = roc_auc_score(y, y_prob)
+        st.metric("AUC Score", f"{auc:.4f}")
 
-        # Confusion matrix
-        cm = confusion_matrix(y_test, y_pred)
 
-        fig, ax = plt.subplots()
-        sns.heatmap(cm, annot=True, fmt="d", ax=ax)
-        plt.xlabel("Predicted")
-        plt.ylabel("Actual")
+    # =====================================
+    # Confusion Matrix
+    # =====================================
 
-        st.pyplot(fig)
+    st.subheader("Confusion Matrix")
 
-        st.subheader("Classification Report")
-        st.text(classification_report(y_test, y_pred))
+    cm = confusion_matrix(y, y_pred)
+    fig, ax = plt.subplots()
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+    ax.set_xlabel("Predicted")
+    ax.set_ylabel("Actual")
+    st.pyplot(fig)
+
+
+    # =====================================
+    # Classification Report
+    # =====================================
+
+    st.subheader("Classification Report")
+    st.text(classification_report(y, y_pred))
+
+else:
+    st.info("Please upload a CSV file to begin.")
