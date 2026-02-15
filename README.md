@@ -102,7 +102,7 @@ Evaluation Metrics Used:
 | **KNN** | Achieved high Accuracy (0.9912) and AUC (0.9974), with strong Recall (0.9811) and high MCC (0.9812). Performs well due to clear class clustering, but performance may degrade if class imbalance increases or dataset size grows. |
 | **Gaussian Naïve Bayes** | Recorded the lowest Recall (0.8962) and MCC (0.8716). Struggles with minority class detection due to the feature independence assumption. Not ideal for imbalanced datasets with correlated features. |
 | **Random Forest** | Achieved the highest AUC (0.9998), perfect Precision (1.0), very high Recall (0.9858), and highest MCC (0.9888). Provides the best balance between false positives and false negatives. Handles imbalance effectively through bootstrapping and feature randomness, making it the most reliable model. |
-| **XGBoost** | Delivered performance nearly identical to Random Forest, with high Recall (0.9858) and MCC (0.9888). Boosting improves focus on difficult (minority) samples. Strong candidate for imbalanced binary classification, especially with proper hyperparameter tuning (e.g., `scale_pos_weight`). |
+| **XGBoost** | Delivered performance nearly identical to Random Forest, with high Recall (0.9858) and MCC (0.9888). Boosting improves focus on difficult (minority) samples. Strong candidate for imbalanced binary classification, especially with proper hyperparameter tuning. |
 
 
 
