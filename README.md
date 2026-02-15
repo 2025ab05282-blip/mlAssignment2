@@ -106,4 +106,37 @@ Evaluation Metrics Used:
 
 
 ---
+ 
+## Final Conclusion
+ 
+Most Reliable Models:
+Random Forest
+XGBoost
+
+Ensemble models (Random Forest and XGBoost) performed best overall.
+Random Forest achieved the highest AUC and demonstrated strong generalization capability. Keeping false positives extremely low, ensuring correct diagnosis. 
+ 
+Given the medical nature of the dataset, high recall for malignant cases is critical. Both Random Forest and XGBoost maintained high recall (0.9858) while also achieving perfect precision.
+
+
+---
+ 
+## Streamlit Application Features
+ 
+- Dataset upload feature
+- Dropdown to select the model 
+- Display of Evaluation metric
+- Visualization of Confusion matrix 
+- Classification report
+ 
+---
+
+
+## Deployment
+ 
+Streamlit App Link: <>
+
+---
+
+
 
