@@ -30,7 +30,9 @@ This project demonstrates an end-to-end machine learning workflow including mode
 ## b) Dataset Description
  
 Dataset Name: Breast Cancer Wisconsin Dataset
+
 Dataset Source : Breast Cancer Wisconsin (Diagnostic) Data Set
+
 Link : https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data
  
 Dataset Shape: (569, 32)
@@ -49,7 +51,8 @@ Class Distribution:
 - Train: [285 Benign, 170 Malignant]
 - Test: [72 Benign, 42 Malignant]
  
-About dataset : Features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass. They describe characteristics of the cell nuclei present in the image, including radius, texture, perimeter, area, smoothness, compactness, concavity, symmetry, and fractal dimension.
+About dataset : 
+Features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass. They describe characteristics of the cell nuclei present in the image, including radius, texture, perimeter, area, smoothness, compactness, concavity, symmetry, and fractal dimension.
  
 ---
  
@@ -98,4 +101,9 @@ Evaluation Metrics Used:
 | **Gaussian Naïve Bayes** | Recorded the lowest Recall (0.8962) and MCC (0.8716). Struggles with minority class detection due to the feature independence assumption. Not ideal for imbalanced datasets with correlated features. |
 | **Random Forest** | Achieved the highest AUC (0.9998), perfect Precision (1.0), very high Recall (0.9858), and highest MCC (0.9888). Provides the best balance between false positives and false negatives. Handles imbalance effectively through bootstrapping and feature randomness, making it the most reliable model. |
 | **XGBoost** | Delivered performance nearly identical to Random Forest, with high Recall (0.9858) and MCC (0.9888). Boosting improves focus on difficult (minority) samples. Strong candidate for imbalanced binary classification, especially with proper hyperparameter tuning (e.g., `scale_pos_weight`). |
+
+
+
+
+---
 
