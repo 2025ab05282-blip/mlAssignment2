@@ -2,9 +2,11 @@ import os
 import pickle
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import (
     accuracy_score,
     roc_auc_score,
@@ -28,9 +30,33 @@ def load_dataset():
     Loads dataset.
     Replace this function if using custom CSV dataset.
     """
-    data = load_breast_cancer()
-    X = data.data
-    y = data.target
+    #data = load_breast_cancer()
+    df = pd.read_csv("/Users/HarshitaShaktawat/Downloads/harshita/data.csv")
+
+    # Drop common junk columns like "Unnamed: 32"
+    df = df.loc[:, ~df.columns.str.contains(r"^Unnamed", regex=True)]
+
+    #print("Shape:", df.shape)
+    #print("Columns:", df.columns.tolist())
+
+    # Split features/target
+    # Split features/target
+    TARGET_COL = "diagnosis"
+
+    X = df.drop(columns=[TARGET_COL]).copy()
+
+    # Drop ID if present
+    if "id" in X.columns:
+     X = X.drop(columns=["id"])
+
+    y_raw = df[TARGET_COL].astype(str)
+
+    le = LabelEncoder()
+    y = le.fit_transform(y_raw)
+
+    print("Target mapping:", dict(zip(le.classes_, le.transform(le.classes_))))
+    # Typically: {'B': 0, 'M': 1}
+
     return X, y
 
 
