@@ -40,6 +40,10 @@ def load_scaler():
 def load_model(path):
     return pickle.load(open(path, "rb"))
 
+@st.cache_resource
+def load_feature_names():
+    return pickle.load(open("model/feature_names.pkl", "rb"))
+
 
 # =====================================
 # File Upload
@@ -52,6 +56,27 @@ if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
     st.subheader("Dataset Preview")
     st.dataframe(data.head())
+
+    # =====================================
+    # Load Feature Names
+    # =====================================
+
+    feature_names = load_feature_names()
+
+    # Check if target column exists
+    if "diagnosis" not in data.columns:
+        st.error("Target column 'diagnosis' not found in uploaded file.")
+        st.stop()
+
+    # Separate target
+    y = data["diagnosis"]
+
+    # Keep only training feature columns
+    try:
+        X = data[feature_names]
+    except KeyError:
+        st.error("Uploaded dataset does not match training features.")
+        st.stop()
 
     # Split features & target
     X = data.iloc[:, :-1]
@@ -101,6 +126,8 @@ if uploaded_file is not None:
     # =====================================
     # Predict
     # =====================================
+
+
 
     y_pred = model.predict(X_scaled)
 
