@@ -16,7 +16,7 @@ from sklearn.metrics import (
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from sklearn.preprocessing import LabelEncoder
 
 # =====================================
 # Page Config
@@ -76,7 +76,7 @@ if uploaded_file is not None:
     X = data[feature_names]
 
     # Separate target
-    y = data["diagnosis"]
+    y_raw = data["diagnosis"]
 
     # Split features & target
     #X = data.iloc[:, :-1]
@@ -86,6 +86,14 @@ if uploaded_file is not None:
         data = data.drop(columns=["id"])
 
     X = data.drop(columns=["diagnosis"])
+
+    y_raw = data["diagnosis"]
+
+    le = LabelEncoder()
+    y = le.fit_transform(y_raw)
+
+    #print("Target mapping:", dict(zip(le.classes_, le.transform(le.classes_))))
+    # Typically: {'B': 0, 'M': 1}
 
     # =====================================
     # Model Selection Dropdown
