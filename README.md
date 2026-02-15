@@ -88,7 +88,7 @@ Evaluation Metrics Used:
 
 
 
-## 📊 Model Performance Observations (Binary Imbalanced Classification)
+## 📊 Model Performance Observations (Binary Classification)
 
 | ML Model | Observation |
 |----------|------------|
